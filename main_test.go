@@ -18,7 +18,7 @@ func TestHandler(t *testing.T) {
 		t.Errorf("expected status code %v, got %v", http.StatusOK, status)
 	}
 
-	expectedBody := "Hello go http server."
+	expectedBody := "Success to start go http server and auto-deploy to Cloud Run."
 	if strings.TrimSpace(recorder.Body.String()) != expectedBody {
 		t.Errorf("expected body '%v', got '%v'", expectedBody, recorder.Body.String())
 	}
