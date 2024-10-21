@@ -34,7 +34,7 @@ jobs:
 
       - name: Build Docker Image
         run: |
-          docker build -t ${{secrets.GCP_REGION}}-docker.pkg.dev/${{secrets.GCP_PROJECT_ID}}/${{secrets.REPOSITORY_NAME}}/cloud-run-deploy:${github.ref_name} -f ./docker/Dockerfile .
+          docker build -t ${{secrets.GCP_REGION}}-docker.pkg.dev/${{secrets.GCP_PROJECT_ID}}/${{secrets.REPOSITORY_NAME}}/cloud-run-deploy:${{github.ref_name}} -f ./docker/Dockerfile .
 
       - name: Push Docker-image to Artifact Registry
         run: |
