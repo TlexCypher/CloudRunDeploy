@@ -1,0 +1,23 @@
+name: Build and test all projects
+on: 
+  push
+
+jobs:
+  build-all-projects:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Build codes
+        run: go build -o main .
+
+  test-all-projects:
+    runs-on: ubuntu-latest
+    nees: build-all-projects
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Test codes
+        run: go test
+
+
