@@ -35,13 +35,13 @@ jobs:
       - name: Build Docker Image
         run: |
           set -x
-          docker build -t ${{secrets.GCP_REGION}}-docker.pkg.dev/${{secrets.GCP_PROJECT_ID}}/${{secrets.REPOSITORY_NAME}}/cloud-run-deploy:v1 -f ./docker/Dockerfile .
+          docker build -t ${{secrets.GCP_REGION}}-docker.pkg.dev/${{secrets.GCP_PROJECT_ID}}/${{secrets.REPOSITORY_NAME}}/cloud-run-deploy:${{github.sha}} -f ./docker/Dockerfile .
 
       - name: Push Docker-image to Artifact Registry
         run: |
-          docker push ${{secrets.GCP_REGION}}-docker.pkg.dev/${{secrets.GCP_PROJECT_ID}}/${{secrets.REPOSITORY_NAME}}/cloud-run-deploy:v1
+          docker push ${{secrets.GCP_REGION}}-docker.pkg.dev/${{secrets.GCP_PROJECT_ID}}/${{secrets.REPOSITORY_NAME}}/cloud-run-deploy:${{github.sha}}
 
       - name: Deploy to Cloud Run
         run: |
-          gcloud run deploy --image ${{secrets.GCP_REGION}}-docker.pkg.dev/${{secrets.GCP_PROJECT_ID}}/${{secrets.REPOSITORY_NAME}}/cloud-run-deploy:v1 --platform=managed --project=${{secrets.GCP_PROJECT_ID}} --service=cloud-run-deploy-demo
+          gcloud run deploy cloud-run-deploy-demo --image ${{secrets.GCP_REGION}}-docker.pkg.dev/${{secrets.GCP_PROJECT_ID}}/${{secrets.REPOSITORY_NAME}}/cloud-run-deploy:v1 --platform=managed --project=${{secrets.GCP_PROJECT_ID}}
 
