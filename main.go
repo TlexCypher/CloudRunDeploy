@@ -5,7 +5,7 @@ import (
 	"net/http"
 )
 
-func handle(w http.ResponseWriter, req *http.Request) {
+func Handler(w http.ResponseWriter, req *http.Request) {
 	log.Println("Hello go http server.")
 	msg := "Hello go http server."
 	_, err := w.Write([]byte(msg))
@@ -15,6 +15,6 @@ func handle(w http.ResponseWriter, req *http.Request) {
 }
 
 func main() {
-	http.HandleFunc("/", handle)
+	http.HandleFunc("/", Handler)
 	http.ListenAndServe(":8080", nil)
 }

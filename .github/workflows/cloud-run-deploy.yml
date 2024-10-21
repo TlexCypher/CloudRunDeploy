@@ -1,0 +1,40 @@
+name: Cloud Run Deploy
+on:
+  workflow_run:
+    workflows: ["Build and test all projects"]
+    types:
+      - completed
+jobs:
+  deploy:
+    if: |
+      ${{github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'master'}}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - id: Auth
+        name: Authenticate to GCP
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{secrets.WORKLOAD_IDENTITY_PROVIDER}}
+          service_account: github-actions@${{ secrets.GCP_PROJECT_ID }}.iam.gserviceaccount.com
+
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+      
+      - name: Authorize Docker push
+        run: gcloud auth configure-docker
+
+      - name: Build Docker Image
+        run: |
+          docker build -t ${{secrets.GCP_REGION}}-docker.pkg.dev/${{secrets.PROJECT_ID}}/${{secrets.REPOSITORY_NAME}}/cloud-run-deploy:${github.ref_name} -f ./docker/Dockerfile .
+
+      - name: Push Docker-image to Artifact Registry
+        run: |
+          docker push ${{secrets.GCP_REGION}}.pkg.dev/${{secrets.PROJECT_ID}}/${{secrets.REPOSITORY_NAME}}/cloud-run-deploy-test1:${{github.ref_name}}
+
+      - name: Deploy to Cloud Run
+        run: |
+          gcloud run deploy --image ${{secrets.GCP_REGION}}-docker.pkg.dev/${{secrets.PROJECT_ID}}/${{secrets.REPOSITORY_NAME}}/cloud-run-deploy-test1:${{github.ref_name}} --platform=managed --project=${{secrets.GCP_PROJECT_ID}}
+
